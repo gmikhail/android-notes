@@ -1,10 +1,10 @@
 package gmikhail.notes
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import gmikhail.notes.databinding.FragmentMainBinding
 
 class MainFragment : Fragment(R.layout.fragment_main) {
@@ -38,6 +38,9 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 }
 
             }
+        }
+        viewBinding?.fab?.setOnClickListener {
+            // TODO create new note
         }
     }
 
