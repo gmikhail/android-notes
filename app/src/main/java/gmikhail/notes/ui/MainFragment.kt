@@ -1,10 +1,11 @@
-package gmikhail.notes
+package gmikhail.notes.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import gmikhail.notes.R
 import gmikhail.notes.databinding.FragmentMainBinding
 
 class MainFragment : Fragment(R.layout.fragment_main) {
