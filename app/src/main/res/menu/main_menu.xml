@@ -4,7 +4,7 @@
     <item android:id="@+id/action_change_display_mode"
         android:icon="@drawable/ic_grid_view"
         app:showAsAction="ifRoom"
-        android:title="@string/menu_settings" />
+        android:title="@string/menu_display_mode" />
     <item android:id="@+id/action_settings"
         android:icon="@drawable/ic_settings"
         app:showAsAction="ifRoom"

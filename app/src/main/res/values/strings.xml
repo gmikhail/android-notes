@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Notes</string>
     <string name="menu_settings">Settings</string>
-    <string name="menu_items_display_mode">Display mode</string>
+    <string name="menu_display_mode">Display mode</string>
 </resources>
