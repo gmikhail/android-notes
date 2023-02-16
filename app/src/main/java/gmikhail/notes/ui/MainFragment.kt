@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import gmikhail.notes.R
 import gmikhail.notes.databinding.FragmentMainBinding
 import gmikhail.notes.viewmodel.MainFragmentViewModel
@@ -51,7 +52,11 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             // TODO create new note
         }
         viewModel.notes.observe(viewLifecycleOwner) {
-            // TODO show notes in recyclerview
+            // TODO where to store layout manager and adapter? Recreate after each data update is wrong
+            viewBinding?.recyclerView?.let { rw ->
+                rw.layoutManager = LinearLayoutManager(context)
+                rw.adapter = NoteAdapter(it.toTypedArray())
+            }
         }
         viewModel.fetchNotes()
     }

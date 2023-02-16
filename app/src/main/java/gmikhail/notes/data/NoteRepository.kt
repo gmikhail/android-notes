@@ -8,20 +8,20 @@ class NoteRepository {
             Note(
                 uid = 0,
                 title = "Hello world!",
-                data = "Here note description!",
+                text = "Here note description!",
                 lastModified = System.currentTimeMillis()
             ),
             Note(
                 uid = 1,
                 title = "Hello world 2!",
-                data = "Here note description!",
-                lastModified = System.currentTimeMillis()
+                text = "Here note description!",
+                lastModified = 1676547991000
             ),
             Note(
                 uid = 2,
                 title = "Hello world 3!",
-                data = "Here note description!",
-                lastModified = System.currentTimeMillis()
+                text = "Here note description!",
+                lastModified = 1676292391000
             )
         )
     }
