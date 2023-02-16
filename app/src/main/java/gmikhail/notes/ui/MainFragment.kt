@@ -13,7 +13,7 @@ import gmikhail.notes.viewmodel.MainFragmentViewModel
 class MainFragment : Fragment(R.layout.fragment_main) {
 
     private var viewBinding: FragmentMainBinding? = null
-    private val viewModel: MainFragmentViewModel by viewModels()
+    private val viewModel: MainFragmentViewModel by viewModels{ MainFragmentViewModel.Factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,6 +50,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         viewBinding?.fab?.setOnClickListener {
             // TODO create new note
         }
+        viewModel.notes.observe(viewLifecycleOwner) {
+            // TODO show notes in recyclerview
+        }
+        viewModel.fetchNotes()
     }
 
     override fun onDestroyView() {
