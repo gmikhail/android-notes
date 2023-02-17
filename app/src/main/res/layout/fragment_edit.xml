@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/colorSurface"
+    tools:context=".ui.MainFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/editTextTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:inputType="textCapSentences|textAutoCorrect"
+        android:hint="@string/hint_note_title"
+        android:textSize="24sp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:background="@android:color/transparent"/>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/editTextBody"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inputType="textMultiLine|textCapSentences"
+        android:gravity="start"
+        android:hint="@string/hint_note_body"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:background="@android:color/transparent"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

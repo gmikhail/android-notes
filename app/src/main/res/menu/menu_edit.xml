@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/action_undo"
+        android:icon="@drawable/ic_undo"
+        app:showAsAction="ifRoom"
+        android:title="@string/menu_undo" />
+    <item android:id="@+id/action_redo"
+        android:icon="@drawable/ic_redo"
+        app:showAsAction="ifRoom"
+        android:title="@string/menu_redo" />
+    <item android:id="@+id/action_done"
+        android:icon="@drawable/ic_done"
+        app:showAsAction="ifRoom"
+        android:title="@string/menu_done" />
+</menu>

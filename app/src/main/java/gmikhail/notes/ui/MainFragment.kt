@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import gmikhail.notes.R
@@ -51,6 +53,13 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
         binding?.fab?.setOnClickListener {
             // TODO create new note
+            parentFragmentManager.commit {
+                setReorderingAllowed(true)
+                // TODO transfer noteId when we want to edit existing note
+                val editFragment = EditFragment.newInstance(-1)
+                add(R.id.fragment_container_view, editFragment)
+                addToBackStack(null)
+            }
         }
         viewModel.notes.observe(viewLifecycleOwner) {
             // TODO where to store layout manager and adapter? Recreate after each data update is wrong
