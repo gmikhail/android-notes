@@ -6,9 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.add
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import gmikhail.notes.R
 import gmikhail.notes.databinding.FragmentMainBinding
@@ -17,7 +16,7 @@ import gmikhail.notes.viewmodel.MainFragmentViewModel
 class MainFragment : Fragment(R.layout.fragment_main) {
 
     private var binding: FragmentMainBinding? = null
-    private val viewModel: MainFragmentViewModel by viewModels{ MainFragmentViewModel.Factory }
+    private val viewModel: MainFragmentViewModel by activityViewModels{ MainFragmentViewModel.Factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,12 +51,9 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             }
         }
         binding?.fab?.setOnClickListener {
-            // TODO create new note
             parentFragmentManager.commit {
                 setReorderingAllowed(true)
-                // TODO transfer noteId when we want to edit existing note
-                val editFragment = EditFragment.newInstance(-1)
-                add(R.id.fragment_container_view, editFragment)
+                add(R.id.fragment_container_view, EditFragment())
                 addToBackStack(null)
             }
         }
@@ -65,7 +61,13 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             // TODO where to store layout manager and adapter? Recreate after each data update is wrong
             binding?.recyclerView?.let { rw ->
                 rw.layoutManager = LinearLayoutManager(context)
-                rw.adapter = NoteAdapter(it.toTypedArray())
+                rw.adapter = NoteAdapter(it.toTypedArray(), AdapterItemClickListener {
+                    parentFragmentManager.commit {
+                        setReorderingAllowed(true)
+                        add(R.id.fragment_container_view, EditFragment.newInstance(it))
+                        addToBackStack(null)
+                    }
+                })
             }
         }
         viewModel.fetchNotes()

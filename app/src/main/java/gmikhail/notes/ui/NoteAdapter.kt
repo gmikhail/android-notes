@@ -8,8 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import gmikhail.notes.data.Note
 import gmikhail.notes.databinding.NoteRowItemBinding
 
-class NoteAdapter(private val dataSet: Array<Note>) :
-    RecyclerView.Adapter<NoteAdapter.ViewHolder>() {
+class NoteAdapter(
+    private val dataSet: Array<Note>,
+    private val clickListener: AdapterItemClickListener
+) : RecyclerView.Adapter<NoteAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: NoteRowItemBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -29,7 +31,15 @@ class NoteAdapter(private val dataSet: Array<Note>) :
             if(isToday) DateUtils.getRelativeTimeSpanString(timestamp)
             else DateUtils.formatDateTime(holder.itemView.context, timestamp,
                 DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR)
+        holder.itemView.setOnClickListener {
+            clickListener.onClick(position)
+        }
     }
 
     override fun getItemCount() = dataSet.count()
+
+}
+
+class AdapterItemClickListener(val clickListener: (position: Int) -> Unit) {
+    fun onClick(position: Int) = clickListener(position)
 }

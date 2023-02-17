@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import gmikhail.notes.R
 import gmikhail.notes.databinding.FragmentEditBinding
+import gmikhail.notes.viewmodel.MainFragmentViewModel
 
 private const val NOTE_ID = "noteId"
 
@@ -15,6 +17,7 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
 
     private var noteId: Int = -1
     private var binding: FragmentEditBinding? = null
+    private val viewModel: MainFragmentViewModel by activityViewModels{ MainFragmentViewModel.Factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +63,14 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
 
             }
         }
-        // TODO load existing note when noteId != -1
+        if(noteId != -1){
+            viewModel.notes.value?.get(noteId)?.let {
+                binding?.editTextTitle?.setText(it.title)
+                binding?.editTextBody?.setText(it.text)
+            }
+        } else {
+            // TODO create new note
+        }
     }
 
     override fun onDestroyView() {
