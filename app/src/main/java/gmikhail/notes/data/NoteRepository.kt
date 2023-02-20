@@ -1,25 +1,25 @@
 package gmikhail.notes.data
 
-class NoteRepository {
+import gmikhail.notes.data.db.DatabaseSource
+import gmikhail.notes.data.db.Note
 
-    fun getNotes(): List<Note>{
-        // TODO load notes from db or fs
-        return listOf(
-            Note(
-                title = "Hello world!",
-                text = "Here note description!",
-                lastModified = System.currentTimeMillis()
-            ),
-            Note(
-                title = "Hello world 2!",
-                text = "Here note description!",
-                lastModified = 1676547991000
-            ),
-            Note(
-                title = "Hello world 3!",
-                text = "Here note description!",
-                lastModified = 1676292391000
-            )
-        )
+class NoteRepository(
+    private val databaseSource: DatabaseSource
+) {
+
+    suspend fun getAll(): List<Note>{
+        return databaseSource.database.noteDao().getAll()
+    }
+
+    suspend fun addNote(note: Note){
+        databaseSource.database.noteDao().insert(note)
+    }
+
+    suspend fun updateNote(note: Note){
+        databaseSource.database.noteDao().update(note)
+    }
+
+    suspend fun deleteNote(note: Note){
+        databaseSource.database.noteDao().delete(note)
     }
 }

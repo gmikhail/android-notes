@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -36,6 +37,10 @@ android {
 }
 
 dependencies {
+    def room_version = "2.5.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
     def fragment_version = "1.5.5"
     implementation("androidx.fragment:fragment-ktx:$fragment_version")
     def lifecycle_version = "2.5.1"

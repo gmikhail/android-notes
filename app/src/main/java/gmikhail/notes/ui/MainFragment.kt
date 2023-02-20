@@ -69,8 +69,9 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     }
                 })
             }
+            binding?.textFrontMessage?.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
         }
-        viewModel.fetchNotes()
+        viewModel.getAllNotes()
         viewModel.darkMode.observe(viewLifecycleOwner) {
             // MIUI bug https://stackoverflow.com/q/63209993/
             AppCompatDelegate.setDefaultNightMode(

@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import gmikhail.notes.R
-import gmikhail.notes.data.Note
+import gmikhail.notes.data.db.Note
 import gmikhail.notes.databinding.FragmentEditBinding
 import gmikhail.notes.viewmodel.MainFragmentViewModel
 

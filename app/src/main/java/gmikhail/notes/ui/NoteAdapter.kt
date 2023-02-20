@@ -5,7 +5,7 @@ import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import gmikhail.notes.data.Note
+import gmikhail.notes.data.db.Note
 import gmikhail.notes.databinding.NoteRowItemBinding
 
 class NoteAdapter(

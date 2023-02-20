@@ -8,4 +8,5 @@
     <string name="menu_undo">Undo</string>
     <string name="menu_redo">Redo</string>
     <string name="menu_done">Done</string>
+    <string name="message_empty_list">You don\'t have any notes yet</string>
 </resources>

@@ -4,9 +4,13 @@ import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.CreationExtras
 import gmikhail.notes.Constants
-import gmikhail.notes.data.Note
+import gmikhail.notes.data.db.Note
 import gmikhail.notes.data.NoteRepository
 import gmikhail.notes.data.PreferencesRepository
+import gmikhail.notes.data.db.DatabaseSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainFragmentViewModel(
     private val noteRepository: NoteRepository,
@@ -18,6 +22,8 @@ class MainFragmentViewModel(
 
     private val _darkMode = MutableLiveData<Boolean>()
     val darkMode: LiveData<Boolean> = _darkMode
+
+    private val viewModelScope = CoroutineScope(Dispatchers.IO)
 
     init {
         fetchDarkMode()
@@ -35,26 +41,43 @@ class MainFragmentViewModel(
         }
     }
 
-    fun fetchNotes(){
-        _notes.value = noteRepository.getNotes().toMutableList()
+    fun getAllNotes(){
+        viewModelScope.launch {
+            _notes.postValue(noteRepository.getAll().toMutableList())
+        }
     }
 
     fun editNote(index: Int, newNote: Note){
         _notes.value?.let {
-            if(index in it.indices)
+            if(index in it.indices) {
                 it[index] = newNote
+                notifyNotesChanged()
+                viewModelScope.launch {
+                    noteRepository.updateNote(newNote)
+                }
+            }
         }
-        notifyNotesChanged()
     }
 
     fun addNote(newNote: Note){
         _notes.value?.add(newNote)
         notifyNotesChanged()
+        viewModelScope.launch {
+            noteRepository.addNote(newNote)
+        }
     }
 
     fun deleteNote(index: Int){
-        _notes.value?.removeAt(index)
-        notifyNotesChanged()
+        _notes.value?.let {
+            if(index in it.indices) {
+                val note = it[index]
+                viewModelScope.launch {
+                    noteRepository.deleteNote(note)
+                }
+                _notes.value?.removeAt(index)
+                notifyNotesChanged()
+            }
+        }
     }
 
     private fun notifyNotesChanged(){
@@ -70,7 +93,7 @@ class MainFragmentViewModel(
             ): T {
                 val application = checkNotNull(extras[APPLICATION_KEY])
                 return MainFragmentViewModel(
-                    NoteRepository(),
+                    NoteRepository(DatabaseSource(application)),
                     PreferencesRepository(application)
                 ) as T
             }
