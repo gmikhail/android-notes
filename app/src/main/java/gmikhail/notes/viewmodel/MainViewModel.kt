@@ -16,7 +16,6 @@ class MainFragmentViewModel(
     private val noteRepository: NoteRepository,
     private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
-
     private val _notes = MutableLiveData<MutableList<Note>>(mutableListOf())
     val notes: LiveData<List<Note>> = _notes.map { it.toList() }
 
