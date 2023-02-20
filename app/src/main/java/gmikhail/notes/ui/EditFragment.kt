@@ -8,21 +8,47 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import gmikhail.notes.R
+import gmikhail.notes.data.Note
 import gmikhail.notes.databinding.FragmentEditBinding
 import gmikhail.notes.viewmodel.MainFragmentViewModel
 
-private const val NOTE_ID = "noteId"
+private const val KEY_NOTE_INDEX = "noteIndex"
 
 class EditFragment : Fragment(R.layout.fragment_edit) {
 
-    private var noteId: Int = -1
+    private var noteIndex: Int = -1
     private var binding: FragmentEditBinding? = null
     private val viewModel: MainFragmentViewModel by activityViewModels{ MainFragmentViewModel.Factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            noteId = it.getInt(NOTE_ID)
+            noteIndex = it.getInt(KEY_NOTE_INDEX)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if(noteIndex != -1) {
+            val editedNote = viewModel.notes.value?.get(noteIndex)?.apply {
+                title = binding?.editTextTitle?.text.toString()
+                text = binding?.editTextBody?.text.toString()
+                lastModified = System.currentTimeMillis()
+            }
+            editedNote?.let {
+                if(it.isNotBlank())
+                    viewModel.editNote(noteIndex, it)
+                else
+                    viewModel.deleteNote(noteIndex)
+            }
+        } else {
+            val newNote = Note(
+                title = binding?.editTextTitle?.text.toString(),
+                text = binding?.editTextBody?.text.toString(),
+                lastModified = System.currentTimeMillis()
+            )
+            if(newNote.isNotBlank())
+                viewModel.addNote(newNote)
         }
     }
 
@@ -63,13 +89,11 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
 
             }
         }
-        if(noteId != -1){
-            viewModel.notes.value?.get(noteId)?.let {
+        if(noteIndex != -1){
+            viewModel.notes.value?.get(noteIndex)?.let {
                 binding?.editTextTitle?.setText(it.title)
                 binding?.editTextBody?.setText(it.text)
             }
-        } else {
-            // TODO create new note
         }
     }
 
@@ -80,10 +104,10 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
 
     companion object {
         @JvmStatic
-        fun newInstance(noteId: Int) =
+        fun newInstance(noteIndex: Int) =
             EditFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(NOTE_ID, noteId)
+                    putInt(KEY_NOTE_INDEX, noteIndex)
                 }
             }
     }

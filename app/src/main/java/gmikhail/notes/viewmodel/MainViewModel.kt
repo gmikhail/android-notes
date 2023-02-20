@@ -13,8 +13,8 @@ class MainFragmentViewModel(
     private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
-    private val _notes = MutableLiveData<List<Note>>()
-    val notes: LiveData<List<Note>> = _notes
+    private val _notes = MutableLiveData<MutableList<Note>>(mutableListOf())
+    val notes: LiveData<List<Note>> = _notes.map { it.toList() }
 
     private val _darkMode = MutableLiveData<Boolean>()
     val darkMode: LiveData<Boolean> = _darkMode
@@ -27,16 +27,38 @@ class MainFragmentViewModel(
         _darkMode.value  = preferencesRepository.loadBool(Constants.PREF_KEY_DARK_MODE, false)
     }
 
-    fun fetchNotes(){
-        _notes.value = noteRepository.getNotes()
-    }
-
     fun switchDarkMode(){
         _darkMode.value?.let {
             val newValue = !it
             _darkMode.value = newValue
             preferencesRepository.saveBool(Constants.PREF_KEY_DARK_MODE, newValue)
         }
+    }
+
+    fun fetchNotes(){
+        _notes.value = noteRepository.getNotes().toMutableList()
+    }
+
+    fun editNote(index: Int, newNote: Note){
+        _notes.value?.let {
+            if(index in it.indices)
+                it[index] = newNote
+        }
+        notifyNotesChanged()
+    }
+
+    fun addNote(newNote: Note){
+        _notes.value?.add(newNote)
+        notifyNotesChanged()
+    }
+
+    fun deleteNote(index: Int){
+        _notes.value?.removeAt(index)
+        notifyNotesChanged()
+    }
+
+    private fun notifyNotesChanged(){
+        _notes.value = _notes.value
     }
 
     companion object {
