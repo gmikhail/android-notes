@@ -60,14 +60,17 @@ class MainFragmentViewModel(
 
     fun loadNotes(){
         viewModelScope.launch {
-            _notes.postValue(noteRepository.getAll().toMutableList())
+            val list = noteRepository.getAll().toMutableList()
+            list.sortByDescending { it.lastModified }
+            _notes.postValue(list)
         }
     }
 
     fun editNote(index: Int, newNote: Note){
         _notes.value?.let {
             if(index in it.indices) {
-                it[index] = newNote
+                it.removeAt(index)
+                it.add(0, newNote)
                 notifyNotesChanged()
                 viewModelScope.launch {
                     noteRepository.updateNote(newNote)
@@ -77,7 +80,7 @@ class MainFragmentViewModel(
     }
 
     fun addNote(newNote: Note){
-        _notes.value?.add(newNote)
+        _notes.value?.add(0, newNote)
         notifyNotesChanged()
         viewModelScope.launch {
             noteRepository.addNote(newNote)
