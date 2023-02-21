@@ -30,6 +30,7 @@
         android:inputType="textCapSentences|textAutoCorrect"
         android:hint="@string/hint_note_title"
         android:textSize="24sp"
+        android:maxLength="@integer/text_title_max_length"
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
         android:background="@android:color/transparent"/>

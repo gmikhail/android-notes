@@ -3,6 +3,7 @@ package gmikhail.notes.ui
 
 import android.text.format.DateUtils
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import gmikhail.notes.data.db.Note
@@ -23,8 +24,12 @@ class NoteAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.binding.textTitle.text = dataSet[position].title
-        holder.binding.textBody.text = dataSet[position].text
+        val title = dataSet[position].title
+        holder.binding.textTitle.text = title
+        holder.binding.textTitle.visibility = if(title.isNotBlank()) View.VISIBLE else View.GONE
+        val body = dataSet[position].text
+        holder.binding.textBody.text = body
+        holder.binding.textBody.visibility = if(body.isNotBlank()) View.VISIBLE else View.GONE
         val timestamp = dataSet[position].lastModified
         val isToday = DateUtils.isToday(timestamp)
         holder.binding.textModified.text =

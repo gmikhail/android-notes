@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import gmikhail.notes.R
 import gmikhail.notes.databinding.FragmentMainBinding
@@ -17,6 +18,12 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     private var binding: FragmentMainBinding? = null
     private val viewModel: MainFragmentViewModel by activityViewModels{ MainFragmentViewModel.Factory }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if(savedInstanceState == null)
+            viewModel.loadNotes()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +45,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                         true
                     }
                     R.id.action_change_display_mode -> {
-                        // TODO recyclerView change display mode
+                        viewModel.switchDisplayMode()
                         true
                     }
                     R.id.action_settings -> {
@@ -57,11 +64,21 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 addToBackStack(null)
             }
         }
+        viewModel.displayModeList.observe(viewLifecycleOwner) { linearLayout ->
+            binding?.recyclerView?.let { recyclerView ->
+                recyclerView.layoutManager =
+                    if(linearLayout)
+                        LinearLayoutManager(context)
+                    else {
+                        val columns = resources.getInteger(R.integer.notes_list_columns)
+                        GridLayoutManager(context, columns)
+                    }
+            }
+        }
         viewModel.notes.observe(viewLifecycleOwner) {
             // TODO where to store layout manager and adapter? Recreate after each data update is wrong
-            binding?.recyclerView?.let { rw ->
-                rw.layoutManager = LinearLayoutManager(context)
-                rw.adapter = NoteAdapter(it.toTypedArray(), AdapterItemClickListener {
+            binding?.recyclerView?.let { recyclerView ->
+                recyclerView.adapter = NoteAdapter(it.toTypedArray(), AdapterItemClickListener {
                     parentFragmentManager.commit {
                         setReorderingAllowed(true)
                         add(R.id.fragment_container_view, EditFragment.newInstance(it))
@@ -71,7 +88,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             }
             binding?.textFrontMessage?.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
         }
-        viewModel.getAllNotes()
         viewModel.darkMode.observe(viewLifecycleOwner) {
             // MIUI bug https://stackoverflow.com/q/63209993/
             AppCompatDelegate.setDefaultNightMode(

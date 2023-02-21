@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="notes_list_columns" type="integer">4</item>
+</resources>

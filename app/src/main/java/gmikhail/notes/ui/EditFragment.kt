@@ -1,9 +1,11 @@
 package gmikhail.notes.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -29,19 +31,7 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
 
     override fun onPause() {
         super.onPause()
-        if(noteIndex != -1) {
-            val editedNote = viewModel.notes.value?.get(noteIndex)?.apply {
-                title = binding?.editTextTitle?.text.toString()
-                text = binding?.editTextBody?.text.toString()
-                lastModified = System.currentTimeMillis()
-            }
-            editedNote?.let {
-                if(it.isNotBlank())
-                    viewModel.editNote(noteIndex, it)
-                else
-                    viewModel.deleteNote(noteIndex)
-            }
-        } else {
+        if(noteIndex == -1) {
             val newNote = Note(
                 title = binding?.editTextTitle?.text.toString(),
                 text = binding?.editTextBody?.text.toString(),
@@ -49,6 +39,24 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
             )
             if(newNote.isNotBlank())
                 viewModel.addNote(newNote)
+        } else {
+            val newTitle = binding?.editTextTitle?.text.toString()
+            val newBody = binding?.editTextBody?.text.toString()
+            val oldNote = viewModel.notes.value?.get(noteIndex)
+            val isNoteChanged = oldNote?.title != newTitle || oldNote.text != newBody
+            if(isNoteChanged){
+                val editedNote = oldNote?.apply {
+                    title = newTitle
+                    text = newBody
+                    lastModified = System.currentTimeMillis()
+                }
+                editedNote?.let {
+                    if(it.isNotBlank())
+                        viewModel.editNote(noteIndex, it)
+                    else
+                        viewModel.deleteNote(noteIndex)
+                }
+            }
         }
     }
 
@@ -89,7 +97,11 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
 
             }
         }
-        if(noteIndex != -1){
+        if(noteIndex == -1){
+            binding?.editTextBody?.requestFocus()
+            val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding?.editTextBody, InputMethodManager.SHOW_IMPLICIT)
+        } else {
             viewModel.notes.value?.get(noteIndex)?.let {
                 binding?.editTextTitle?.setText(it.title)
                 binding?.editTextBody?.setText(it.text)

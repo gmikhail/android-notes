@@ -22,14 +22,24 @@ class MainFragmentViewModel(
     private val _darkMode = MutableLiveData<Boolean>()
     val darkMode: LiveData<Boolean> = _darkMode
 
+    private val _displayModeList = MutableLiveData<Boolean>()
+    val displayModeList: LiveData<Boolean> = _displayModeList
+
     private val viewModelScope = CoroutineScope(Dispatchers.IO)
 
     init {
-        fetchDarkMode()
+        loadDarkMode()
+        loadDisplayMode()
     }
 
-    private fun fetchDarkMode() {
+    private fun loadDarkMode() {
         _darkMode.value  = preferencesRepository.loadBool(Constants.PREF_KEY_DARK_MODE, false)
+    }
+
+    private fun loadDisplayMode(){
+        _displayModeList.value = preferencesRepository.loadBool(
+            Constants.PREF_KEY_DISPLAY_MODE_LIST, true
+        )
     }
 
     fun switchDarkMode(){
@@ -40,7 +50,15 @@ class MainFragmentViewModel(
         }
     }
 
-    fun getAllNotes(){
+    fun switchDisplayMode(){
+        _displayModeList.value?.let {
+            val newValue = !it
+            _displayModeList.value = newValue
+            preferencesRepository.saveBool(Constants.PREF_KEY_DISPLAY_MODE_LIST, newValue)
+        }
+    }
+
+    fun loadNotes(){
         viewModelScope.launch {
             _notes.postValue(noteRepository.getAll().toMutableList())
         }
