@@ -89,7 +89,7 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
                         true
                     }
                     R.id.action_done -> {
-                        // TODO done
+                        parentFragmentManager.popBackStack()
                         true
                     }
                     else -> false
