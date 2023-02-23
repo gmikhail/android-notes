@@ -32,6 +32,7 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
 
     override fun onPause() {
         super.onPause()
+        if(activity?.isChangingConfigurations == true) return
         if(noteIndex == -1) {
             val newNote = Note(
                 title = binding?.editTextTitle?.text.toString(),
