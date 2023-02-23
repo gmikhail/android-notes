@@ -21,6 +21,7 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
     private var noteIndex: Int = -1
     private var binding: FragmentEditBinding? = null
     private val viewModel: MainFragmentViewModel by activityViewModels{ MainFragmentViewModel.Factory }
+    private var undoManager: UndoManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,11 +82,11 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
             toolbar.setOnMenuItemClickListener {
                 when(it.itemId){
                     R.id.action_undo -> {
-                        // TODO undo
+                        undoManager?.undo()
                         true
                     }
                     R.id.action_redo -> {
-                        // TODO redo
+                        undoManager?.redo()
                         true
                     }
                     R.id.action_done -> {
@@ -97,8 +98,23 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
 
             }
         }
+        updateUndoMenu(canUndo = false, canRedo = false)
+        if(undoManager == null){
+            undoManager = binding?.editTextBody?.let {
+                UndoManager(it, TextChangedListener { canUndo, canRedo ->
+                    updateUndoMenu(canUndo, canRedo)
+                })
+            }
+        }
+        binding?.editTextTitle?.setOnFocusChangeListener { _, hasFocus ->
+            showUndoMenu(!hasFocus)
+        }
+        binding?.editTextBody?.setOnFocusChangeListener { _, hasFocus ->
+            showUndoMenu(hasFocus)
+        }
         if(noteIndex == -1){
             binding?.editTextBody?.requestFocus()
+            binding?.editTextBody?.setText("")
             val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding?.editTextBody, InputMethodManager.SHOW_IMPLICIT)
         } else {
@@ -107,6 +123,16 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
                 binding?.editTextBody?.setText(it.text)
             }
         }
+    }
+
+    private fun showUndoMenu(visible: Boolean){
+        binding?.topAppBar?.menu?.findItem(R.id.action_undo)?.isVisible = visible
+        binding?.topAppBar?.menu?.findItem(R.id.action_redo)?.isVisible = visible
+    }
+
+    private fun updateUndoMenu(canUndo: Boolean, canRedo: Boolean){
+        binding?.topAppBar?.menu?.findItem(R.id.action_undo)?.isEnabled = canUndo
+        binding?.topAppBar?.menu?.findItem(R.id.action_redo)?.isEnabled = canRedo
     }
 
     override fun onDestroyView() {
