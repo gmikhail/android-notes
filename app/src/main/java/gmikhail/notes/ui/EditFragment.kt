@@ -7,11 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import gmikhail.notes.R
 import gmikhail.notes.data.db.Note
 import gmikhail.notes.databinding.FragmentEditBinding
+import gmikhail.notes.viewmodel.EditViewModel
+import gmikhail.notes.viewmodel.HistoryRecord
 import gmikhail.notes.viewmodel.MainFragmentViewModel
 
 private const val KEY_NOTE_INDEX = "noteIndex"
@@ -20,8 +24,8 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
 
     private var noteIndex: Int = -1
     private var binding: FragmentEditBinding? = null
-    private val viewModel: MainFragmentViewModel by activityViewModels{ MainFragmentViewModel.Factory }
-    private var undoManager: UndoManager? = null
+    private val viewModelMain: MainFragmentViewModel by activityViewModels{ MainFragmentViewModel.Factory }
+    private val viewModelEdit: EditViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +44,11 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
                 lastModified = System.currentTimeMillis()
             )
             if(newNote.isNotBlank())
-                viewModel.addNote(newNote)
+                viewModelMain.addNote(newNote)
         } else {
             val newTitle = binding?.editTextTitle?.text.toString()
             val newBody = binding?.editTextBody?.text.toString()
-            val oldNote = viewModel.notes.value?.get(noteIndex)
+            val oldNote = viewModelMain.notes.value?.get(noteIndex)
             val isNoteChanged = oldNote?.title != newTitle || oldNote.text != newBody
             if(isNoteChanged){
                 val editedNote = oldNote?.apply {
@@ -54,9 +58,9 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
                 }
                 editedNote?.let {
                     if(it.isNotBlank())
-                        viewModel.editNote(noteIndex, it)
+                        viewModelMain.editNote(noteIndex, it)
                     else
-                        viewModel.deleteNote(noteIndex)
+                        viewModelMain.deleteNote(noteIndex)
                 }
             }
         }
@@ -83,11 +87,11 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
             toolbar.setOnMenuItemClickListener {
                 when(it.itemId){
                     R.id.action_undo -> {
-                        undoManager?.undo()
+                        viewModelEdit.undo()
                         true
                     }
                     R.id.action_redo -> {
-                        undoManager?.redo()
+                        viewModelEdit.redo()
                         true
                     }
                     R.id.action_done -> {
@@ -99,13 +103,11 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
 
             }
         }
-        updateUndoMenu(canUndo = false, canRedo = false)
-        if(undoManager == null){
-            undoManager = binding?.editTextBody?.let {
-                UndoManager(it, TextChangedListener { canUndo, canRedo ->
-                    updateUndoMenu(canUndo, canRedo)
-                })
-            }
+        viewModelEdit.canUndo.observe(viewLifecycleOwner) {
+            binding?.topAppBar?.menu?.findItem(R.id.action_undo)?.isEnabled = it
+        }
+        viewModelEdit.canRedo.observe(viewLifecycleOwner) {
+            binding?.topAppBar?.menu?.findItem(R.id.action_redo)?.isEnabled = it
         }
         binding?.editTextTitle?.setOnFocusChangeListener { _, hasFocus ->
             showUndoMenu(!hasFocus)
@@ -113,15 +115,33 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
         binding?.editTextBody?.setOnFocusChangeListener { _, hasFocus ->
             showUndoMenu(hasFocus)
         }
-        if(noteIndex == -1){
-            binding?.editTextBody?.requestFocus()
-            binding?.editTextBody?.setText("")
-            val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(binding?.editTextBody, InputMethodManager.SHOW_IMPLICIT)
-        } else {
-            viewModel.notes.value?.get(noteIndex)?.let {
-                binding?.editTextTitle?.setText(it.title)
-                binding?.editTextBody?.setText(it.text)
+        binding?.editTextBody?.let { editTextBody ->
+            editTextBody.doOnTextChanged { text, _, _, _ ->
+                //if(savedInstanceState != null) return@doOnTextChanged
+                val record = HistoryRecord(text.toString(), editTextBody.selectionEnd)
+                viewModelEdit.addToHistory(record)
+            }
+            viewModelEdit.textState.observe(viewLifecycleOwner) {
+                it?.let {
+                    if(it.text != editTextBody.text.toString()) {
+                        editTextBody.setText(it.text)
+                        editTextBody.setSelection(it.cursorPosition)
+                    }
+                }
+            }
+        }
+        if(savedInstanceState == null) {
+            if (noteIndex == -1) {
+                binding?.editTextBody?.requestFocus()
+                viewModelEdit.addToHistory(HistoryRecord("", 0))
+                val imm =
+                    context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(binding?.editTextBody, InputMethodManager.SHOW_IMPLICIT)
+            } else {
+                viewModelMain.notes.value?.get(noteIndex)?.let {
+                    binding?.editTextTitle?.setText(it.title)
+                    viewModelEdit.addToHistory(HistoryRecord(it.text, it.text.length))
+                }
             }
         }
     }
@@ -129,11 +149,6 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
     private fun showUndoMenu(visible: Boolean){
         binding?.topAppBar?.menu?.findItem(R.id.action_undo)?.isVisible = visible
         binding?.topAppBar?.menu?.findItem(R.id.action_redo)?.isVisible = visible
-    }
-
-    private fun updateUndoMenu(canUndo: Boolean, canRedo: Boolean){
-        binding?.topAppBar?.menu?.findItem(R.id.action_undo)?.isEnabled = canUndo
-        binding?.topAppBar?.menu?.findItem(R.id.action_redo)?.isEnabled = canRedo
     }
 
     override fun onDestroyView() {
