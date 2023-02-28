@@ -50,6 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
+                android:autoLink="all"
                 android:gravity="start"
                 android:hint="@string/hint_note_body"
                 android:paddingHorizontal="16dp"
