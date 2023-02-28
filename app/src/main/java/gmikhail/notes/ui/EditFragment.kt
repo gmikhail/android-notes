@@ -85,7 +85,6 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
         }
         binding?.editTextBody?.let { editTextBody ->
             editTextBody.doOnTextChanged { text, _, _, _ ->
-                //if(savedInstanceState != null) return@doOnTextChanged
                 val record = HistoryRecord(text.toString(), editTextBody.selectionEnd)
                 viewModelEdit.addToHistory(record)
             }
