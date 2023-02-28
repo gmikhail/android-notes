@@ -22,26 +22,23 @@ class MainFragmentViewModel(
     private val _selection = MutableLiveData<MutableList<Int>>(mutableListOf())
     val selection: LiveData<List<Int>> = _selection.map { it.toList() }
 
-    val notesState : MediatorLiveData<List<NoteState>> = MediatorLiveData<List<NoteState>>().apply {
-        addSource(_notes) { notes ->
+    val notesState: MediatorLiveData<List<NoteState>> = MediatorLiveData<List<NoteState>>().apply {
+        addSource(notes) { notes ->
             value = mutableListOf<NoteState>().apply {
-                for(note in notes){
-                    val noteIndex = notes.indexOf(note)
-                    val isSelected = _selection.value?.contains(noteIndex) == true
+                notes.forEachIndexed { index, note ->
+                    val isSelected = selection.value?.contains(index) == true
                     add(NoteState(note, isSelected))
                 }
-            }.toList()
+            }
         }
-        addSource(_selection){ selection ->
+        addSource(selection) { selection ->
+            val selectedIndexes = selection.toSet()
             value = mutableListOf<NoteState>().apply {
-                _notes.value?.let {
-                    for(note in it){
-                        val noteIndex = it.indexOf(note)
-                        val isSelected = selection.contains(noteIndex)
-                        add(NoteState(note, isSelected))
-                    }
+                notes.value?.forEachIndexed { index, note ->
+                    val isSelected = index in selectedIndexes
+                    add(NoteState(note, isSelected))
                 }
-            }.toList()
+            }
         }
     }
 
