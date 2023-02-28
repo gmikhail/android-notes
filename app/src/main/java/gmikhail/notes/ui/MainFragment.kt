@@ -139,8 +139,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         viewModel.selection.observe(viewLifecycleOwner){
             actionMode?.title = it.size.toString()
             actionMode?.menu?.findItem(R.id.action_delete)?.isEnabled = it.isNotEmpty()
-            if(it.isNotEmpty())
-                binding?.recyclerView?.adapter?.notifyItemChanged(it.last())
         }
     }
 
