@@ -1,9 +1,7 @@
 package gmikhail.notes.ui
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -19,11 +17,57 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private var binding: FragmentMainBinding? = null
     private val viewModel: MainFragmentViewModel by activityViewModels{ MainFragmentViewModel.Factory }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if(savedInstanceState == null)
-            viewModel.loadNotes()
+    private var actionMode: ActionMode? = null
+    private val actionModeCallback = object : ActionMode.Callback {
+        override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            mode?.menuInflater?.inflate(R.menu.context_menu, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            return false
+        }
+
+        override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+            return when (item?.itemId) {
+                R.id.action_delete -> {
+                    viewModel.deleteSelectedNotes()
+                    mode?.finish()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode?) {
+            viewModel.clearSelection()
+            actionMode = null
+        }
     }
+
+    private fun startActionMode() {
+        if (actionMode == null) {
+            actionMode = requireActivity().startActionMode(actionModeCallback)
+        }
+    }
+
+    private var adapter = NoteAdapter(
+        NoteAdapter.AdapterItemClickListener { position ->
+            if(actionMode != null){
+                viewModel.select(position)
+            } else {
+                parentFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    add(R.id.fragment_container_view, EditFragment.newInstance(position))
+                    addToBackStack(null)
+                }
+            }
+        },
+        NoteAdapter.AdapterItemLongClickListener { position ->
+            startActionMode()
+            viewModel.select(position)
+        }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,7 +98,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     }
                     else -> false
                 }
-
             }
         }
         binding?.fab?.setOnClickListener {
@@ -75,19 +118,17 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     }
             }
         }
-        viewModel.notes.observe(viewLifecycleOwner) {
-            // TODO where to store layout manager and adapter? Recreate after each data update is wrong
-            binding?.recyclerView?.let { recyclerView ->
-                recyclerView.adapter = NoteAdapter(it.toTypedArray(), AdapterItemClickListener {
-                    parentFragmentManager.commit {
-                        setReorderingAllowed(true)
-                        add(R.id.fragment_container_view, EditFragment.newInstance(it))
-                        addToBackStack(null)
-                    }
-                })
-            }
+        binding?.recyclerView?.adapter = adapter
+        viewModel.notesState.observe(viewLifecycleOwner) {
+            adapter.submitList(it.toList())
             binding?.textFrontMessage?.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
         }
+        // TODO autoscroll not working sometimes
+        /*viewModel.notes.observe(viewLifecycleOwner) {
+            binding?.recyclerView?.post {
+                binding?.recyclerView?.smoothScrollToPosition(0)
+            }
+        }*/
         viewModel.darkMode.observe(viewLifecycleOwner) {
             // MIUI bug https://stackoverflow.com/q/63209993/
             AppCompatDelegate.setDefaultNightMode(
@@ -98,6 +139,12 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 if(it) R.drawable.ic_light_mode
                 else R.drawable.ic_dark_mode
             )
+        }
+        viewModel.selection.observe(viewLifecycleOwner){
+            actionMode?.title = it.size.toString()
+            actionMode?.menu?.findItem(R.id.action_delete)?.isEnabled = it.isNotEmpty()
+            if(it.isNotEmpty())
+                binding?.recyclerView?.adapter?.notifyItemChanged(it.last())
         }
     }
 

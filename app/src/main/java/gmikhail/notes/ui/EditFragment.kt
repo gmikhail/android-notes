@@ -34,38 +34,6 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        if(activity?.isChangingConfigurations == true) return
-        if(noteIndex == -1) {
-            val newNote = Note(
-                title = binding?.editTextTitle?.text.toString(),
-                text = binding?.editTextBody?.text.toString(),
-                lastModified = System.currentTimeMillis()
-            )
-            if(newNote.isNotBlank())
-                viewModelMain.addNote(newNote)
-        } else {
-            val newTitle = binding?.editTextTitle?.text.toString()
-            val newBody = binding?.editTextBody?.text.toString()
-            val oldNote = viewModelMain.notes.value?.get(noteIndex)
-            val isNoteChanged = oldNote?.title != newTitle || oldNote.text != newBody
-            if(isNoteChanged){
-                val editedNote = oldNote?.apply {
-                    title = newTitle
-                    text = newBody
-                    lastModified = System.currentTimeMillis()
-                }
-                editedNote?.let {
-                    if(it.isNotBlank())
-                        viewModelMain.editNote(noteIndex, it)
-                    else
-                        viewModelMain.deleteNote(noteIndex)
-                }
-            }
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -138,7 +106,7 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
                     context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.showSoftInput(binding?.editTextBody, InputMethodManager.SHOW_IMPLICIT)
             } else {
-                viewModelMain.notes.value?.get(noteIndex)?.let {
+                viewModelMain.getNote(noteIndex)?.let {
                     binding?.editTextTitle?.setText(it.title)
                     viewModelEdit.addToHistory(HistoryRecord(it.text, it.text.length))
                 }
@@ -149,6 +117,38 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
     private fun showUndoMenu(visible: Boolean){
         binding?.topAppBar?.menu?.findItem(R.id.action_undo)?.isVisible = visible
         binding?.topAppBar?.menu?.findItem(R.id.action_redo)?.isVisible = visible
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if(activity?.isChangingConfigurations == true) return
+        if(noteIndex == -1) {
+            val newNote = Note(
+                title = binding?.editTextTitle?.text.toString(),
+                text = binding?.editTextBody?.text.toString(),
+                lastModified = System.currentTimeMillis()
+            )
+            if(newNote.isNotBlank())
+                viewModelMain.addNote(newNote)
+        } else {
+            val newTitle = binding?.editTextTitle?.text.toString()
+            val newBody = binding?.editTextBody?.text.toString()
+            val oldNote = viewModelMain.getNote(noteIndex)
+            val isNoteChanged = oldNote?.title != newTitle || oldNote.text != newBody
+            if(isNoteChanged){
+                val editedNote = oldNote?.apply {
+                    title = newTitle
+                    text = newBody
+                    lastModified = System.currentTimeMillis()
+                }
+                editedNote?.let {
+                    if(it.isNotBlank())
+                        viewModelMain.editNote(noteIndex, it)
+                    else
+                        viewModelMain.deleteNote(noteIndex)
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {

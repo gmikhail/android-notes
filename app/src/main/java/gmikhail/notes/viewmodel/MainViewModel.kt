@@ -19,6 +19,32 @@ class MainFragmentViewModel(
     private val _notes = MutableLiveData<MutableList<Note>>(mutableListOf())
     val notes: LiveData<List<Note>> = _notes.map { it.toList() }
 
+    private val _selection = MutableLiveData<MutableList<Int>>(mutableListOf())
+    val selection: LiveData<List<Int>> = _selection.map { it.toList() }
+
+    val notesState : MediatorLiveData<List<NoteState>> = MediatorLiveData<List<NoteState>>().apply {
+        addSource(_notes) { notes ->
+            value = mutableListOf<NoteState>().apply {
+                for(note in notes){
+                    val noteIndex = notes.indexOf(note)
+                    val isSelected = _selection.value?.contains(noteIndex) == true
+                    add(NoteState(note, isSelected))
+                }
+            }.toList()
+        }
+        addSource(_selection){ selection ->
+            value = mutableListOf<NoteState>().apply {
+                _notes.value?.let {
+                    for(note in it){
+                        val noteIndex = it.indexOf(note)
+                        val isSelected = selection.contains(noteIndex)
+                        add(NoteState(note, isSelected))
+                    }
+                }
+            }.toList()
+        }
+    }
+
     private val _darkMode = MutableLiveData<Boolean>()
     val darkMode: LiveData<Boolean> = _darkMode
 
@@ -28,8 +54,50 @@ class MainFragmentViewModel(
     private val viewModelScope = CoroutineScope(Dispatchers.IO)
 
     init {
+        loadNotes()
         loadDarkMode()
         loadDisplayMode()
+    }
+
+    fun select(index: Int){
+        if(_notes.value?.indices?.contains(index) == false) return
+        _selection.value?.let {
+            if(it.contains(index))
+                it.remove(index)
+            else it.add(index)
+            notifySelectionChanged()
+        }
+    }
+
+    fun clearSelection(){
+        _selection.value?.let {
+            it.clear()
+            notifySelectionChanged()
+        }
+    }
+
+    fun deleteSelectedNotes(){
+        _selection.value?.let { selection ->
+            _notes.value?.let { notes ->
+                val notesToRemove = mutableListOf<Note>()
+                for (index in selection) {
+                    getNote(index)?.let { note ->
+                        notesToRemove.add(note)
+                    }
+                }
+                notes.removeAll(notesToRemove)
+                notifyNotesChanged()
+                viewModelScope.launch {
+                    for (n in notesToRemove)
+                        noteRepository.deleteNote(n)
+                }
+            }
+            clearSelection()
+        }
+    }
+
+    private fun notifySelectionChanged(){
+        _selection.value = _selection.value
     }
 
     private fun loadDarkMode() {
@@ -58,7 +126,9 @@ class MainFragmentViewModel(
         }
     }
 
-    fun loadNotes(){
+    fun getNote(index: Int) = _notes.value?.get(index)
+
+    private fun loadNotes(){
         viewModelScope.launch {
             val list = noteRepository.getAll().toMutableList()
             list.sortByDescending { it.lastModified }
@@ -120,3 +190,5 @@ class MainFragmentViewModel(
         }
     }
 }
+
+data class NoteState(var note: Note, var isSelected: Boolean)
