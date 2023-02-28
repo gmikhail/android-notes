@@ -32,10 +32,9 @@ class MainFragmentViewModel(
             }
         }
         addSource(selection) { selection ->
-            val selectedIndexes = selection.toSet()
             value = mutableListOf<NoteState>().apply {
                 notes.value?.forEachIndexed { index, note ->
-                    val isSelected = index in selectedIndexes
+                    val isSelected = index in selection
                     add(NoteState(note, isSelected))
                 }
             }
@@ -188,4 +187,4 @@ class MainFragmentViewModel(
     }
 }
 
-data class NoteState(var note: Note, var isSelected: Boolean)
+data class NoteState(val note: Note, val isSelected: Boolean)

@@ -120,15 +120,15 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
         binding?.recyclerView?.adapter = adapter
         viewModel.notesState.observe(viewLifecycleOwner) {
-            adapter.submitList(it.toList())
-            binding?.textFrontMessage?.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
+            adapter.submitList(it)
         }
-        // TODO autoscroll not working sometimes
-        /*viewModel.notes.observe(viewLifecycleOwner) {
-            binding?.recyclerView?.post {
+        viewModel.notes.observe(viewLifecycleOwner) {
+            binding?.textFrontMessage?.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
+            // TODO autoscroll not working sometimes
+            /*binding?.recyclerView?.post {
                 binding?.recyclerView?.smoothScrollToPosition(0)
-            }
-        }*/
+            }*/
+        }
         viewModel.darkMode.observe(viewLifecycleOwner) {
             // MIUI bug https://stackoverflow.com/q/63209993/
             AppCompatDelegate.setDefaultNightMode(

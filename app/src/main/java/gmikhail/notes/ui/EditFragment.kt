@@ -136,11 +136,11 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
             val oldNote = viewModelMain.getNote(noteIndex)
             val isNoteChanged = oldNote?.title != newTitle || oldNote.text != newBody
             if(isNoteChanged){
-                val editedNote = oldNote?.apply {
-                    title = newTitle
-                    text = newBody
+                val editedNote = oldNote?.copy(
+                    title = newTitle,
+                    text = newBody,
                     lastModified = System.currentTimeMillis()
-                }
+                )
                 editedNote?.let {
                     if(it.isNotBlank())
                         viewModelMain.editNote(noteIndex, it)
