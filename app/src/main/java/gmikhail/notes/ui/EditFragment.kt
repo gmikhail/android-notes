@@ -83,7 +83,7 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
             toolbar.setNavigationOnClickListener {
                 parentFragmentManager.popBackStack()
             }
-            toolbar.inflateMenu(R.menu.menu_edit)
+            toolbar.inflateMenu(R.menu.edit_menu)
             toolbar.setOnMenuItemClickListener {
                 when(it.itemId){
                     R.id.action_undo -> {
