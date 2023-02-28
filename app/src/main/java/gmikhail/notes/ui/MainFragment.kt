@@ -124,10 +124,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
         viewModel.notes.observe(viewLifecycleOwner) {
             binding?.textFrontMessage?.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
-            // TODO autoscroll not working sometimes
-            /*binding?.recyclerView?.post {
-                binding?.recyclerView?.smoothScrollToPosition(0)
-            }*/
         }
         viewModel.darkMode.observe(viewLifecycleOwner) {
             // MIUI bug https://stackoverflow.com/q/63209993/
