@@ -5,13 +5,12 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Note(
+    @PrimaryKey(autoGenerate = true)
+    val uid: Int = 0,
     val title: String,
     val text: String,
     val lastModified: Long
 ) {
-    @PrimaryKey(autoGenerate = true)
-    var uid: Int = 0
-
     fun isNotBlank(): Boolean {
         return title.isNotBlank() || text.isNotBlank()
     }

@@ -11,8 +11,8 @@ class NoteRepository(
         return databaseSource.database.noteDao().getAll()
     }
 
-    suspend fun addNote(note: Note){
-        databaseSource.database.noteDao().insert(note)
+    suspend fun addNote(note: Note): Long{
+        return databaseSource.database.noteDao().insert(note)
     }
 
     suspend fun updateNote(note: Note){

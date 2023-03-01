@@ -146,10 +146,14 @@ class MainFragmentViewModel(
     }
 
     fun addNote(newNote: Note){
-        _notes.value?.add(0, newNote)
-        notifyNotesChanged()
         viewModelScope.launch {
-            noteRepository.addNote(newNote)
+            val uid = noteRepository.addNote(newNote).toInt()
+            val newNoteWithId = newNote.copy(uid = uid)
+            _notes.value?.apply {
+                add(0, newNoteWithId)
+            }.let {
+                _notes.postValue(it)
+            }
         }
     }
 
