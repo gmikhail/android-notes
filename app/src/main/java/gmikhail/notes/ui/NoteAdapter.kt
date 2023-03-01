@@ -52,7 +52,7 @@ class NoteAdapter(
                 else DateUtils.formatDateTime(itemView.context, timestamp,
                     DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR)
             itemView.setBackgroundColor(
-                if(item.isSelected) ContextCompat.getColor(context, R.color.highlight)
+                if(item.isSelected) ContextCompat.getColor(context, R.color.selection_highlight)
                 else Color.TRANSPARENT
             )
         }
