@@ -149,10 +149,8 @@ class MainFragmentViewModel(
         viewModelScope.launch {
             val uid = noteRepository.addNote(newNote).toInt()
             val newNoteWithId = newNote.copy(uid = uid)
-            _notes.value?.apply {
-                add(0, newNoteWithId)
-            }.let {
-                _notes.postValue(it)
+            _notes.value?.let {
+                _notes.postValue(it.apply { add(0, newNoteWithId) })
             }
         }
     }
