@@ -5,7 +5,8 @@ import android.view.*
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.commit
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import gmikhail.notes.R
@@ -56,11 +57,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             if(actionMode != null){
                 viewModel.select(position)
             } else {
-                parentFragmentManager.commit {
-                    setReorderingAllowed(true)
-                    add(R.id.fragment_container_view, EditFragment.newInstance(position))
-                    addToBackStack(null)
-                }
+                val action = MainFragmentDirections.actionMainFragmentToEditFragment(position)
+                val navController = findNavController()
+                if(navController.currentDestination?.id == R.id.mainFragment)
+                    navController.navigate(action)
             }
         },
         NoteAdapter.AdapterItemLongClickListener { position ->
@@ -101,11 +101,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             }
         }
         binding?.fab?.setOnClickListener {
-            parentFragmentManager.commit {
-                setReorderingAllowed(true)
-                add(R.id.fragment_container_view, EditFragment())
-                addToBackStack(null)
-            }
+            val action = MainFragmentDirections.actionMainFragmentToEditFragment()
+            it.findNavController().navigate(action)
         }
         viewModel.displayModeList.observe(viewLifecycleOwner) { linearLayout ->
             binding?.recyclerView?.let { recyclerView ->

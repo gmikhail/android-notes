@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import gmikhail.notes.R
 import gmikhail.notes.data.db.Note
 import gmikhail.notes.databinding.FragmentEditBinding
@@ -45,12 +47,10 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.topAppBar?.let { toolbar ->
-            toolbar.navigationIcon =
-                ContextCompat.getDrawable(view.context, R.drawable.ic_arrow_back)
-            toolbar.setNavigationOnClickListener {
-                parentFragmentManager.popBackStack()
-            }
+        binding?.materialToolbar?.let { toolbar ->
+            val navController = findNavController()
+            val appBarConfiguration = AppBarConfiguration(navController.graph)
+            toolbar.setupWithNavController(navController, appBarConfiguration)
             toolbar.inflateMenu(R.menu.edit_menu)
             toolbar.setOnMenuItemClickListener {
                 when(it.itemId){
@@ -63,19 +63,18 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
                         true
                     }
                     R.id.action_done -> {
-                        parentFragmentManager.popBackStack()
+                        findNavController().popBackStack()
                         true
                     }
                     else -> false
                 }
-
             }
         }
         viewModelEdit.canUndo.observe(viewLifecycleOwner) {
-            binding?.topAppBar?.menu?.findItem(R.id.action_undo)?.isEnabled = it
+            binding?.materialToolbar?.menu?.findItem(R.id.action_undo)?.isEnabled = it
         }
         viewModelEdit.canRedo.observe(viewLifecycleOwner) {
-            binding?.topAppBar?.menu?.findItem(R.id.action_redo)?.isEnabled = it
+            binding?.materialToolbar?.menu?.findItem(R.id.action_redo)?.isEnabled = it
         }
         binding?.editTextTitle?.setOnFocusChangeListener { _, hasFocus ->
             showUndoMenu(!hasFocus)
@@ -114,8 +113,8 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
     }
 
     private fun showUndoMenu(visible: Boolean){
-        binding?.topAppBar?.menu?.findItem(R.id.action_undo)?.isVisible = visible
-        binding?.topAppBar?.menu?.findItem(R.id.action_redo)?.isVisible = visible
+        binding?.materialToolbar?.menu?.findItem(R.id.action_undo)?.isVisible = visible
+        binding?.materialToolbar?.menu?.findItem(R.id.action_redo)?.isVisible = visible
     }
 
     override fun onPause() {
