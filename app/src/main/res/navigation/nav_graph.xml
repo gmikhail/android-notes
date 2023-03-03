@@ -19,6 +19,6 @@
         <argument
             android:name="noteIndex"
             app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="-1" />
     </fragment>
 </navigation>
