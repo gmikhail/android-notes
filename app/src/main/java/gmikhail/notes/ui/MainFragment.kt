@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import gmikhail.notes.R
 import gmikhail.notes.databinding.FragmentMainBinding
 import gmikhail.notes.viewmodel.MainFragmentViewModel
@@ -116,11 +117,28 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             }
         }
         binding?.recyclerView?.adapter = adapter
+        binding?.recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                binding?.fab?.let { fab ->
+                    if (dy > 0 && fab.isExtended)
+                        fab.shrink()
+                    else if (dy < 0 && !fab.isExtended)
+                        fab.extend()
+                }
+            }
+        })
         viewModel.notesState.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
         viewModel.notes.observe(viewLifecycleOwner) {
             binding?.textFrontMessage?.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
+            if(it.isNotEmpty() && System.currentTimeMillis() - it.first().lastModified <= 1000)
+                binding?.recyclerView?.let { recyclerView ->
+                    recyclerView.post {
+                        recyclerView.smoothScrollToPosition(0)
+                    }
+                }
         }
         viewModel.darkMode.observe(viewLifecycleOwner) {
             // MIUI bug https://stackoverflow.com/q/63209993/
