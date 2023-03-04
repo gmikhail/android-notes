@@ -82,7 +82,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.topAppBar?.let { toolbar ->
+        binding?.materialToolbar?.let { toolbar ->
             toolbar.inflateMenu(R.menu.main_menu)
             toolbar.setOnMenuItemClickListener {
                 when(it.itemId){
@@ -108,15 +108,19 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             val action = MainFragmentDirections.actionMainFragmentToEditFragment()
             it.findNavController().navigate(action)
         }
-        viewModel.displayModeList.observe(viewLifecycleOwner) { linearLayout ->
+        viewModel.displayModeList.observe(viewLifecycleOwner) { isList ->
             binding?.recyclerView?.let { recyclerView ->
                 recyclerView.layoutManager =
-                    if(linearLayout)
+                    if(isList)
                         LinearLayoutManager(context)
                     else {
                         val columns = resources.getInteger(R.integer.notes_list_columns)
                         StaggeredGridLayoutManager(columns, RecyclerView.VERTICAL)
                     }
+                binding?.materialToolbar?.menu?.findItem(R.id.action_change_display_mode)?.setIcon(
+                    if(isList) R.drawable.ic_grid_view
+                    else R.drawable.ic_view_agenda
+                )
             }
         }
         binding?.recyclerView?.adapter = adapter
@@ -149,7 +153,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 if(it) AppCompatDelegate.MODE_NIGHT_YES
                 else AppCompatDelegate.MODE_NIGHT_NO
             )
-            binding?.topAppBar?.menu?.findItem(R.id.action_dark_mode)?.setIcon(
+            binding?.materialToolbar?.menu?.findItem(R.id.action_dark_mode)?.setIcon(
                 if(it) R.drawable.ic_light_mode
                 else R.drawable.ic_dark_mode
             )
@@ -161,7 +165,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             actionMode?.menu?.findItem(R.id.action_delete)?.isEnabled = it.isNotEmpty()
         }
     }
-
+    
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
