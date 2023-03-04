@@ -35,7 +35,8 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             android:clipToPadding="false"
-            android:paddingBottom="88dp"/>
+            android:paddingBottom="88dp"
+            tools:listitem="@layout/note_row_item"/>
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab"
