@@ -7,9 +7,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import gmikhail.notes.R
 import gmikhail.notes.databinding.FragmentMainBinding
 import gmikhail.notes.viewmodel.MainFragmentViewModel
@@ -114,7 +114,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                         LinearLayoutManager(context)
                     else {
                         val columns = resources.getInteger(R.integer.notes_list_columns)
-                        GridLayoutManager(context, columns)
+                        StaggeredGridLayoutManager(columns, RecyclerView.VERTICAL)
                     }
             }
         }
