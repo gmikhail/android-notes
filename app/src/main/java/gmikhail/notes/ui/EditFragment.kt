@@ -1,6 +1,7 @@
 package gmikhail.notes.ui
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,19 +21,19 @@ import gmikhail.notes.viewmodel.EditViewModel
 import gmikhail.notes.viewmodel.HistoryRecord
 import gmikhail.notes.viewmodel.MainFragmentViewModel
 
-private const val KEY_NOTE_INDEX = "noteIndex"
+private const val KEY_NOTE_ID = "noteId"
 
 class EditFragment : Fragment(R.layout.fragment_edit) {
 
-    private var noteIndex: Int = -1
     private var binding: FragmentEditBinding? = null
     private val viewModelMain: MainFragmentViewModel by activityViewModels{ MainFragmentViewModel.Factory }
     private val viewModelEdit: EditViewModel by viewModels()
+    private var shouldRemove = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            noteIndex = it.getInt(KEY_NOTE_INDEX)
+            viewModelEdit.setNoteId(it.getInt(KEY_NOTE_ID))
         }
     }
 
@@ -62,7 +63,13 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
                         viewModelEdit.redo()
                         true
                     }
-                    R.id.action_done -> {
+                    R.id.action_share -> {
+                        share()
+                        true
+                    }
+                    R.id.action_delete -> {
+                        shouldRemove = true
+                        hideKeyboard()
                         findNavController().popBackStack()
                         true
                     }
@@ -70,22 +77,29 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
                 }
             }
         }
+        updateShareMenu()
         viewModelEdit.canUndo.observe(viewLifecycleOwner) {
             binding?.materialToolbar?.menu?.findItem(R.id.action_undo)?.isEnabled = it
         }
         viewModelEdit.canRedo.observe(viewLifecycleOwner) {
             binding?.materialToolbar?.menu?.findItem(R.id.action_redo)?.isEnabled = it
         }
-        binding?.editTextTitle?.setOnFocusChangeListener { _, hasFocus ->
-            showUndoMenu(!hasFocus)
-        }
-        binding?.editTextBody?.setOnFocusChangeListener { _, hasFocus ->
-            showUndoMenu(hasFocus)
+        binding?.editTextTitle?.let { editTextTitle ->
+            editTextTitle.setOnFocusChangeListener { _, hasFocus ->
+                showUndoMenu(!hasFocus)
+            }
+            editTextTitle.doOnTextChanged { _, _, _, _ ->
+                updateShareMenu()
+            }
         }
         binding?.editTextBody?.let { editTextBody ->
+            editTextBody.setOnFocusChangeListener { _, hasFocus ->
+                showUndoMenu(hasFocus)
+            }
             editTextBody.doOnTextChanged { text, _, _, _ ->
                 val record = HistoryRecord(text.toString(), editTextBody.selectionEnd)
                 viewModelEdit.addToHistory(record)
+                updateShareMenu()
             }
             viewModelEdit.textState.observe(viewLifecycleOwner) {
                 it?.let {
@@ -96,15 +110,14 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
                 }
             }
         }
+        val noteId = viewModelEdit.noteId
         if(savedInstanceState == null) {
-            if (noteIndex == -1) {
+            if (noteId == -1) {
                 binding?.editTextBody?.requestFocus()
+                showKeyboard(binding?.editTextBody)
                 viewModelEdit.addToHistory(HistoryRecord("", 0))
-                val imm =
-                    context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.showSoftInput(binding?.editTextBody, InputMethodManager.SHOW_IMPLICIT)
             } else {
-                viewModelMain.getNote(noteIndex)?.let {
+                viewModelMain.getNote(noteId)?.let {
                     binding?.editTextTitle?.setText(it.title)
                     viewModelEdit.addToHistory(HistoryRecord(it.text, it.text.length))
                 }
@@ -112,55 +125,89 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
         }
     }
 
+    private fun updateShareMenu(){
+        val hasContent = binding?.editTextTitle?.text?.isNotBlank() == true ||
+                binding?.editTextBody?.text?.isNotBlank() == true
+        binding?.materialToolbar?.menu?.findItem(R.id.action_share)?.isEnabled = hasContent
+    }
+
+    private fun share(){
+        val title = binding?.editTextTitle?.text.toString()
+        val text = binding?.editTextBody?.text.toString()
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, title)
+            putExtra(Intent.EXTRA_TEXT, text)
+        }
+        startActivity(Intent.createChooser(shareIntent, null))
+    }
+
+    private fun showKeyboard(view: View?){
+        val inputMethodManager =
+            context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    private fun hideKeyboard(){
+        val inputMethodManager =
+            context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+    }
+
     private fun showUndoMenu(visible: Boolean){
         binding?.materialToolbar?.menu?.findItem(R.id.action_undo)?.isVisible = visible
         binding?.materialToolbar?.menu?.findItem(R.id.action_redo)?.isVisible = visible
     }
 
+    private fun addNewNote(){
+        val newNote = Note(
+            title = binding?.editTextTitle?.text.toString(),
+            text = binding?.editTextBody?.text.toString(),
+            lastModified = System.currentTimeMillis()
+        )
+        if(newNote.isNotBlank())
+            viewModelMain.addNote(newNote) {
+                viewModelEdit.setNoteId(it)
+            }
+    }
+
+    private fun editNote(){
+        val noteId = viewModelEdit.noteId
+        val newTitle = binding?.editTextTitle?.text.toString()
+        val newBody = binding?.editTextBody?.text.toString()
+        val oldNote = viewModelMain.getNote(noteId)
+        val isNoteChanged = oldNote?.title != newTitle || oldNote.text != newBody
+        if(isNoteChanged){
+            val editedNote = oldNote?.copy(
+                title = newTitle,
+                text = newBody,
+                lastModified = System.currentTimeMillis()
+            )
+            editedNote?.let {
+                if(it.isNotBlank())
+                    viewModelMain.editNote(it)
+                else
+                    viewModelMain.deleteNote(noteId)
+            }
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         if(activity?.isChangingConfigurations == true) return
-        if(noteIndex == -1) {
-            val newNote = Note(
-                title = binding?.editTextTitle?.text.toString(),
-                text = binding?.editTextBody?.text.toString(),
-                lastModified = System.currentTimeMillis()
-            )
-            if(newNote.isNotBlank())
-                viewModelMain.addNote(newNote)
-        } else {
-            val newTitle = binding?.editTextTitle?.text.toString()
-            val newBody = binding?.editTextBody?.text.toString()
-            val oldNote = viewModelMain.getNote(noteIndex)
-            val isNoteChanged = oldNote?.title != newTitle || oldNote.text != newBody
-            if(isNoteChanged){
-                val editedNote = oldNote?.copy(
-                    title = newTitle,
-                    text = newBody,
-                    lastModified = System.currentTimeMillis()
-                )
-                editedNote?.let {
-                    if(it.isNotBlank())
-                        viewModelMain.editNote(noteIndex, it)
-                    else
-                        viewModelMain.deleteNote(noteIndex)
-                }
-            }
+        val noteId = viewModelEdit.noteId
+        if(noteId == -1) {
+            if (!shouldRemove)
+                addNewNote()
+        }
+        else {
+            if (shouldRemove) viewModelMain.deleteNote(noteId)
+            else editNote()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(noteIndex: Int) =
-            EditFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(KEY_NOTE_INDEX, noteIndex)
-                }
-            }
     }
 }

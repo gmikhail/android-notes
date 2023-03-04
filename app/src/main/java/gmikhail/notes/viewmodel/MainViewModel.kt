@@ -77,15 +77,15 @@ class MainFragmentViewModel(
             _notes.value?.let { notes ->
                 val notesToRemove = mutableListOf<Note>()
                 for (index in selection) {
-                    getNote(index)?.let { note ->
+                    notes[index].let { note ->
                         notesToRemove.add(note)
                     }
                 }
                 notes.removeAll(notesToRemove)
                 notifyNotesChanged()
                 viewModelScope.launch {
-                    for (n in notesToRemove)
-                        noteRepository.deleteNote(n)
+                    for (note in notesToRemove)
+                        noteRepository.deleteNote(note)
                 }
             }
             clearSelection()
@@ -122,7 +122,7 @@ class MainFragmentViewModel(
         }
     }
 
-    fun getNote(index: Int) = _notes.value?.get(index)
+    fun getNote(id: Int) = _notes.value?.find { it.uid == id }
 
     private fun loadNotes(){
         viewModelScope.launch {
@@ -132,11 +132,11 @@ class MainFragmentViewModel(
         }
     }
 
-    fun editNote(index: Int, newNote: Note){
-        _notes.value?.let {
-            if(index in it.indices) {
-                it.removeAt(index)
-                it.add(0, newNote)
+    fun editNote(newNote: Note){
+        _notes.value?.let { notes ->
+            notes.find { it.uid == newNote.uid }?.let { oldNote ->
+                notes.remove(oldNote)
+                notes.add(0, newNote)
                 notifyNotesChanged()
                 viewModelScope.launch {
                     noteRepository.updateNote(newNote)
@@ -145,26 +145,24 @@ class MainFragmentViewModel(
         }
     }
 
-    fun addNote(newNote: Note){
+    fun addNote(newNote: Note, callback: (id: Int) -> Unit){
         viewModelScope.launch {
-            val uid = noteRepository.addNote(newNote).toInt()
-            val newNoteWithId = newNote.copy(uid = uid)
+            val id = noteRepository.addNote(newNote).toInt()
+            val newNoteWithId = newNote.copy(uid = id)
             _notes.value?.let {
                 _notes.postValue(it.apply { add(0, newNoteWithId) })
             }
+            callback.invoke(id)
         }
     }
 
-    fun deleteNote(index: Int){
-        _notes.value?.let {
-            if(index in it.indices) {
-                val note = it[index]
-                viewModelScope.launch {
-                    noteRepository.deleteNote(note)
-                }
-                _notes.value?.removeAt(index)
-                notifyNotesChanged()
+    fun deleteNote(id: Int){
+        _notes.value?.find { it.uid == id }?.let {
+            _notes.value?.remove(it)
+            viewModelScope.launch {
+                noteRepository.deleteNote(it)
             }
+            notifyNotesChanged()
         }
     }
 

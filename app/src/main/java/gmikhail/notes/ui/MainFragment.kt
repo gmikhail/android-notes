@@ -58,7 +58,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             if(actionMode != null){
                 viewModel.select(position)
             } else {
-                val action = MainFragmentDirections.actionMainFragmentToEditFragment(position)
+                val id = viewModel.notes.value?.get(position)?.uid ?: return@AdapterItemClickListener
+                val action = MainFragmentDirections.actionMainFragmentToEditFragment(id)
                 val navController = findNavController()
                 if(navController.currentDestination?.id == R.id.mainFragment)
                     navController.navigate(action)

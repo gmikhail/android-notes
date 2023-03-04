@@ -7,6 +7,10 @@ import androidx.lifecycle.ViewModel
 private const val MAX_UNDO = 1024
 
 class EditViewModel : ViewModel() {
+    private var _noteId = -1
+    val noteId: Int
+        get() = _noteId
+
     private val history = mutableListOf<HistoryRecord>()
     private var index = 0
     private var inProgress = false
@@ -19,6 +23,10 @@ class EditViewModel : ViewModel() {
 
     private var _canRedo = MutableLiveData(false)
     val canRedo: LiveData<Boolean> = _canRedo
+
+    fun setNoteId(id: Int){
+        _noteId = id
+    }
 
     fun addToHistory(record: HistoryRecord){
         if(inProgress) return
