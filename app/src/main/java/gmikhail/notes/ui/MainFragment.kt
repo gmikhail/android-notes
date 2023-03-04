@@ -103,6 +103,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             }
         }
         binding?.fab?.setOnClickListener {
+            it.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             actionMode?.finish()
             val action = MainFragmentDirections.actionMainFragmentToEditFragment()
             it.findNavController().navigate(action)
