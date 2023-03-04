@@ -3,7 +3,6 @@ package gmikhail.notes.viewmodel
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.CreationExtras
-import gmikhail.notes.Constants
 import gmikhail.notes.data.db.Note
 import gmikhail.notes.data.NoteRepository
 import gmikhail.notes.data.PreferencesRepository
@@ -11,6 +10,9 @@ import gmikhail.notes.data.db.DatabaseSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
+private const val PREF_KEY_DARK_MODE = "pref_dark_mode"
+private const val PREF_KEY_DISPLAY_MODE_LIST = "pref_display_mode_list"
 
 class MainFragmentViewModel(
     private val noteRepository: NoteRepository,
@@ -97,12 +99,12 @@ class MainFragmentViewModel(
     }
 
     private fun loadDarkMode() {
-        _darkMode.value  = preferencesRepository.loadBool(Constants.PREF_KEY_DARK_MODE, false)
+        _darkMode.value  = preferencesRepository.loadBool(PREF_KEY_DARK_MODE, false)
     }
 
     private fun loadDisplayMode(){
         _displayModeList.value = preferencesRepository.loadBool(
-            Constants.PREF_KEY_DISPLAY_MODE_LIST, true
+            PREF_KEY_DISPLAY_MODE_LIST, true
         )
     }
 
@@ -110,7 +112,7 @@ class MainFragmentViewModel(
         _darkMode.value?.let {
             val newValue = !it
             _darkMode.value = newValue
-            preferencesRepository.saveBool(Constants.PREF_KEY_DARK_MODE, newValue)
+            preferencesRepository.saveBool(PREF_KEY_DARK_MODE, newValue)
         }
     }
 
@@ -118,7 +120,7 @@ class MainFragmentViewModel(
         _displayModeList.value?.let {
             val newValue = !it
             _displayModeList.value = newValue
-            preferencesRepository.saveBool(Constants.PREF_KEY_DISPLAY_MODE_LIST, newValue)
+            preferencesRepository.saveBool(PREF_KEY_DISPLAY_MODE_LIST, newValue)
         }
     }
 
