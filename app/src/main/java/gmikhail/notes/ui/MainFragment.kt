@@ -103,6 +103,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             }
         }
         binding?.fab?.setOnClickListener {
+            actionMode?.finish()
             val action = MainFragmentDirections.actionMainFragmentToEditFragment()
             it.findNavController().navigate(action)
         }
@@ -152,6 +153,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 else R.drawable.ic_dark_mode
             )
         }
+        if(viewModel.selection.value?.isNotEmpty() == true)
+            startActionMode()
         viewModel.selection.observe(viewLifecycleOwner){
             actionMode?.title = it.size.toString()
             actionMode?.menu?.findItem(R.id.action_delete)?.isEnabled = it.isNotEmpty()
