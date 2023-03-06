@@ -51,7 +51,7 @@
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/textFrontMessage"
+        android:id="@+id/textEmptyListMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/message_empty_list"

@@ -139,7 +139,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             adapter.submitList(it)
         }
         viewModel.notes.observe(viewLifecycleOwner) {
-            binding?.textFrontMessage?.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
+            binding?.textEmptyListMessage?.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
             if(it.isNotEmpty() && System.currentTimeMillis() - it.first().lastModified <= 1000)
                 binding?.recyclerView?.let { recyclerView ->
                     recyclerView.post {
