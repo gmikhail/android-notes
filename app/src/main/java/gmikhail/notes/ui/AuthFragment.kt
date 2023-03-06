@@ -1,6 +1,5 @@
 package gmikhail.notes.ui
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,43 +48,35 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             .getBoolean(getString(R.string.auth_key), false)
 
     private fun authenticate(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            executor = ContextCompat.getMainExecutor(requireContext())
-            biometricPrompt = BiometricPrompt(this, executor,
-                object : BiometricPrompt.AuthenticationCallback() {
-                    override fun onAuthenticationError(errorCode: Int,
-                                                       errString: CharSequence) {
-                        super.onAuthenticationError(errorCode, errString)
-                        Toast.makeText(context,
-                            "Authentication error: $errString", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+        executor = ContextCompat.getMainExecutor(requireContext())
+        biometricPrompt = BiometricPrompt(this, executor,
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationError(errorCode: Int,
+                                                   errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    Toast.makeText(context,
+                        getString(R.string.auth_error, errString), Toast.LENGTH_SHORT)
+                        .show()
+                }
 
-                    override fun onAuthenticationSucceeded(
-                        result: BiometricPrompt.AuthenticationResult) {
-                        super.onAuthenticationSucceeded(result)
-                        val action = AuthFragmentDirections.actionAuthFragmentToMainFragment()
-                        findNavController().navigate(action)
-                    }
+                override fun onAuthenticationSucceeded(
+                    result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    val action = AuthFragmentDirections.actionAuthFragmentToMainFragment()
+                    findNavController().navigate(action)
+                }
 
-                    override fun onAuthenticationFailed() {
-                        super.onAuthenticationFailed()
-                        Toast.makeText(context, "Authentication failed",
-                            Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                })
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                    Toast.makeText(context, R.string.auth_fail, Toast.LENGTH_SHORT).show()
+                }
+            })
 
-            promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Biometric authentication")
-                .setNegativeButtonText("Cancel")
-                .build()
+        promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(getString(R.string.auth_prompt_title))
+            .setNegativeButtonText(getString(R.string.auth_prompt_negative))
+            .build()
 
-            biometricPrompt.authenticate(promptInfo)
-        } else {
-            Toast.makeText(context, "Authentication not supported on Android 8 and below",
-                Toast.LENGTH_SHORT)
-                .show()
-        }
+        biometricPrompt.authenticate(promptInfo)
     }
 }
