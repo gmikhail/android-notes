@@ -12,4 +12,8 @@
     <string name="fab_create">Create</string>
     <string name="menu_share">Share</string>
     <string name="auth_message">Identify yourself</string>
+    <!-- Preferences -->
+    <string name="auth_header">Security</string>
+    <string name="auth_title">Biometric authentication</string>
+    <string name="auth_key" translatable="false">auth</string>
 </resources>

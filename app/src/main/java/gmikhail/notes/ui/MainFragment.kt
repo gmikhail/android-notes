@@ -95,7 +95,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                         true
                     }
                     R.id.action_settings -> {
-                        // TODO navigate to settings
+                        val action = MainFragmentDirections.actionMainFragmentToSettingsFragment()
+                        findNavController().navigate(action)
                         true
                     }
                     else -> false

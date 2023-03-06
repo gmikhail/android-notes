@@ -10,6 +10,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import gmikhail.notes.R
 import gmikhail.notes.databinding.FragmentAuthBinding
 import java.util.concurrent.Executor
@@ -32,11 +33,20 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imageButton.setOnClickListener {
+        if(isNeedToAuthenticate()) {
+            binding.imageButton.setOnClickListener {
+                authenticate()
+            }
             authenticate()
+        } else {
+            val action = AuthFragmentDirections.actionAuthFragmentToMainFragment()
+            findNavController().navigate(action)
         }
-        authenticate()
     }
+
+    private fun isNeedToAuthenticate(): Boolean =
+        PreferenceManager.getDefaultSharedPreferences(requireActivity())
+            .getBoolean(getString(R.string.auth_key), false)
 
     private fun authenticate(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

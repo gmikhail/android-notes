@@ -1,0 +1,13 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="@string/auth_header">
+
+        <SwitchPreferenceCompat
+            app:key="@string/auth_key"
+            app:title="@string/auth_title"
+            android:icon="@drawable/ic_fingerprint"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

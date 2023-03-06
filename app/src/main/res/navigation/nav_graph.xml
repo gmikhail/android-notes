@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_mainFragment_to_editFragment"
             app:destination="@id/editFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/editFragment"
@@ -31,4 +34,7 @@
             app:popUpTo="@id/authFragment"
             app:popUpToInclusive="true"/>
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="gmikhail.notes.ui.SettingsFragment" />
 </navigation>
