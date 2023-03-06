@@ -19,14 +19,14 @@ import gmikhail.notes.data.db.Note
 import gmikhail.notes.databinding.FragmentEditBinding
 import gmikhail.notes.viewmodel.EditViewModel
 import gmikhail.notes.viewmodel.HistoryRecord
-import gmikhail.notes.viewmodel.MainFragmentViewModel
+import gmikhail.notes.viewmodel.MainViewModel
 
 private const val KEY_NOTE_ID = "noteId"
 
 class EditFragment : Fragment(R.layout.fragment_edit) {
 
     private var binding: FragmentEditBinding? = null
-    private val viewModelMain: MainFragmentViewModel by activityViewModels{ MainFragmentViewModel.Factory }
+    private val viewModelMain: MainViewModel by activityViewModels{ MainViewModel.Factory }
     private val viewModelEdit: EditViewModel by viewModels()
     private var shouldRemove = false
 

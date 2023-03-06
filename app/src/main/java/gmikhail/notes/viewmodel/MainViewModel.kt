@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 private const val PREF_KEY_DARK_MODE = "pref_dark_mode"
 private const val PREF_KEY_DISPLAY_MODE_LIST = "pref_display_mode_list"
 
-class MainFragmentViewModel(
+class MainViewModel(
     private val noteRepository: NoteRepository,
     private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
@@ -180,7 +180,7 @@ class MainFragmentViewModel(
                 extras: CreationExtras
             ): T {
                 val application = checkNotNull(extras[APPLICATION_KEY])
-                return MainFragmentViewModel(
+                return MainViewModel(
                     NoteRepository(DatabaseSource(application)),
                     PreferencesRepository(application)
                 ) as T

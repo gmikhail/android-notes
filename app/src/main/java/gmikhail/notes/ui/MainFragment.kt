@@ -12,12 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import gmikhail.notes.R
 import gmikhail.notes.databinding.FragmentMainBinding
-import gmikhail.notes.viewmodel.MainFragmentViewModel
+import gmikhail.notes.viewmodel.MainViewModel
 
 class MainFragment : Fragment(R.layout.fragment_main) {
 
     private var binding: FragmentMainBinding? = null
-    private val viewModel: MainFragmentViewModel by activityViewModels{ MainFragmentViewModel.Factory }
+    private val viewModel: MainViewModel by activityViewModels{ MainViewModel.Factory }
 
     private var actionMode: ActionMode? = null
     private val actionModeCallback = object : ActionMode.Callback {
