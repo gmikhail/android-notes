@@ -18,7 +18,7 @@ class MainViewModel(
     private val noteRepository: NoteRepository,
     private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
-    private val _notes = MutableLiveData<MutableList<Note>>(mutableListOf())
+    private val _notes = MutableLiveData<MutableList<Note>>()
     val notes: LiveData<List<Note>> = _notes.map { it.toList() }
 
     private val _selection = MutableLiveData<MutableList<Int>>(mutableListOf())
