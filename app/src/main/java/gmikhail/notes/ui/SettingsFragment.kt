@@ -10,8 +10,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
-        val isCanBio = BiometricUtil.isSupported(requireContext())
         findPreference<SwitchPreferenceCompat>(getString(R.string.auth_key))?.let {
+            val isCanBio = BiometricUtil.isSupported(requireContext())
             it.isEnabled = isCanBio
             it.summary = if(isCanBio) null else getString(R.string.feature_not_supported)
         }
