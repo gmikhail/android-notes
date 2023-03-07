@@ -1,8 +1,12 @@
 package gmikhail.notes.ui
 
+import android.content.Intent
 import android.os.Bundle
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import gmikhail.notes.BuildConfig
 import gmikhail.notes.R
 import gmikhail.notes.util.BiometricUtil
 
@@ -15,5 +19,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
             it.isEnabled = isCanBio
             it.summary = if(isCanBio) null else getString(R.string.feature_not_supported)
         }
+        findPreference<Preference>(getString(R.string.license_key))?.setOnPreferenceClickListener {
+            startActivity(Intent(context, OssLicensesMenuActivity::class.java))
+            true
+        }
+        findPreference<Preference>(getString(R.string.version_key))?.summary =
+            BuildConfig.VERSION_NAME
     }
 }

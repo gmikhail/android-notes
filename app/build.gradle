@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.android.gms.oss-licenses-plugin'
 }
 
 android {
@@ -17,6 +18,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.debug
     }
 
     buildTypes {
@@ -38,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
     implementation "androidx.biometric:biometric-ktx:1.2.0-alpha05"
     implementation "androidx.preference:preference:1.2.0"
     def nav_version = "2.5.3"
