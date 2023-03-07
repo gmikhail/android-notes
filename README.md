@@ -1,8 +1,6 @@
 # Notes
 
-<img src="docs/screenshot1.png" width="200px">
-<img src="docs/screenshot2.png" width="200px">
-<img src="docs/screenshot3.png" width="200px">
+<img src="docs/screenshot1.png" width="200px"> <img src="docs/screenshot2.png" width="200px"> <img src="docs/screenshot3.png" width="200px">
 
 Open source Notes app for Android. Yes, another one, I know.
 
