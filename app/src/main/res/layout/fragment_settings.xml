@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -20,45 +20,46 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewAuthHeader"
+        style="@style/TextAppearance.Material3.TitleMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/auth_header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switchAuth"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:padding="16dp"
+        android:showText="true"
+        android:text="@string/auth_label"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAuthHeader" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:text="@string/auth_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            style="@style/TextAppearance.Material3.TitleMedium"/>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewLicense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="16dp"
+        android:text="@string/license_label"
+        app:layout_constraintTop_toBottomOf="@+id/switchAuth" />
 
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/switchAuth"
-            android:text="@string/auth_label"
-            android:showText="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"/>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewVersion"
+        style="@style/TextAppearance.Material3.LabelSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLicense"
+        tools:text="Version" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/textViewLicense"
-            android:text="@string/license_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground"/>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/textViewVersion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="16dp"
-            style="@style/TextAppearance.Material3.LabelSmall"
-            tools:text="Version"/>
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-</androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.constraintlayout.widget.ConstraintLayout>
