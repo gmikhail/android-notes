@@ -16,13 +16,9 @@
     <string name="auth_fail">Authentication failed</string>
     <string name="auth_prompt_title">Biometric authentication</string>
     <string name="auth_prompt_negative">Cancel</string>
-    <!-- Preferences -->
+    <!-- Settings -->
+    <string name="settings_label">Settings</string>
     <string name="auth_header">Security</string>
     <string name="auth_title">Biometric authentication</string>
-    <string name="auth_key" translatable="false">auth</string>
-    <string name="feature_not_supported">Not supported</string>
-    <string name="license_key" translatable="false">license</string>
     <string name="license_title">Open source licenses</string>
-    <string name="version_key" translatable="false">version</string>
-    <string name="version_title">Version</string>
 </resources>

@@ -2,28 +2,54 @@ package gmikhail.notes.ui
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreferenceCompat
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import gmikhail.notes.BuildConfig
 import gmikhail.notes.R
+import gmikhail.notes.databinding.FragmentSettingsBinding
 import gmikhail.notes.util.BiometricUtil
+import gmikhail.notes.viewmodel.SettingsViewModel
 
-class SettingsFragment : PreferenceFragmentCompat() {
+class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        setPreferencesFromResource(R.xml.preferences, rootKey)
-        findPreference<SwitchPreferenceCompat>(getString(R.string.auth_key))?.let {
-            val isCanBio = BiometricUtil.isSupported(requireContext())
-            it.isEnabled = isCanBio
-            it.summary = if(isCanBio) null else getString(R.string.feature_not_supported)
+    private var binding: FragmentSettingsBinding? = null
+    private val viewModel: SettingsViewModel by viewModels{ SettingsViewModel.Factory }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        return binding?.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.materialToolbar?.let { toolbar ->
+            val navController = findNavController()
+            val appBarConfiguration = AppBarConfiguration(navController.graph)
+            toolbar.setupWithNavController(navController, appBarConfiguration)
         }
-        findPreference<Preference>(getString(R.string.license_key))?.setOnPreferenceClickListener {
+        binding?.switchAuth?.let { switch ->
+            viewModel.isAuthEnabled.observe(viewLifecycleOwner) {
+                switch.isChecked = it
+            }
+            switch.isEnabled = BiometricUtil.isSupported(requireContext())
+            switch.setOnCheckedChangeListener { _, isChecked ->
+                viewModel.setAuth(isChecked)
+            }
+        }
+        binding?.textViewLicense?.setOnClickListener {
             startActivity(Intent(context, OssLicensesMenuActivity::class.java))
-            true
         }
-        findPreference<Preference>(getString(R.string.version_key))?.summary =
-            BuildConfig.VERSION_NAME
+        binding?.textViewVersion?.text = BuildConfig.VERSION_NAME
     }
 }

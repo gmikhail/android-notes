@@ -12,6 +12,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import gmikhail.notes.R
 import gmikhail.notes.databinding.FragmentAuthBinding
+import gmikhail.notes.viewmodel.AUTH_KEY
+import gmikhail.notes.viewmodel.AUTH_DEFAULT_VALUE
 import java.util.concurrent.Executor
 
 class AuthFragment : Fragment(R.layout.fragment_auth) {
@@ -45,7 +47,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     private fun isNeedToAuthenticate(): Boolean =
         PreferenceManager.getDefaultSharedPreferences(requireActivity())
-            .getBoolean(getString(R.string.auth_key), false)
+            .getBoolean(AUTH_KEY, AUTH_DEFAULT_VALUE)
 
     private fun authenticate(){
         executor = ContextCompat.getMainExecutor(requireContext())
