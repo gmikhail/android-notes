@@ -2,9 +2,9 @@
 
 <img src="docs/screenshot1.png" width="200px"> <img src="docs/screenshot2.png" width="200px"> <img src="docs/screenshot3.png" width="200px">
 
-Open source Notes app for Android. Yes, another one, I know.
+Notes app for Android. Yes, another one, I know.
 
-Originally developed to improve my Android development skills. As a result, it utilizes modern app development methodologies such as Single Activity, MVVM, LiveData, Room, Navigation components, etc.
+Developed to improve my Android development skills. It uses modern app development solutions such as Single Activity, MVVM, LiveData, Room, Navigation components, etc.
 
 ## Features
 
@@ -15,7 +15,7 @@ Originally developed to improve my Android development skills. As a result, it u
 
 ## Contribution
 
-Feel free to make improvements and fixes. Just stick with the KISS (keep it short and simple) principle.
+Feel free to suggest improvements and fixes. Just stick with the KISS (keep it short and simple) principle.
 
 ## Credits
 
