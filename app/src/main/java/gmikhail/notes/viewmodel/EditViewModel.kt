@@ -1,16 +1,15 @@
 package gmikhail.notes.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 
 private const val MAX_UNDO = 1024
+internal const val NEW_NOTE_ID = -1
 
-class EditViewModel : ViewModel() {
-    private var _noteId = -1
+class EditViewModel(
+    private var _noteId: Int
+) : ViewModel() {
     val noteId: Int
         get() = _noteId
-
     private val history = mutableListOf<HistoryRecord>()
     private var index = 0
     private var inProgress = false
@@ -24,8 +23,9 @@ class EditViewModel : ViewModel() {
     private var _canRedo = MutableLiveData(false)
     val canRedo: LiveData<Boolean> = _canRedo
 
-    fun setNoteId(id: Int){
-        _noteId = id
+    fun updateNewNoteId(id: Int){
+        if(_noteId == NEW_NOTE_ID)
+            _noteId = id
     }
 
     fun addToHistory(record: HistoryRecord){
@@ -63,6 +63,17 @@ class EditViewModel : ViewModel() {
     private fun updateCanUndoOrRedo(){
         _canUndo.value = history.isNotEmpty() && index - 1 in history.indices
         _canRedo.value = history.isNotEmpty() && index + 1 in history.indices
+    }
+
+    companion object {
+        @Suppress("UNCHECKED_CAST")
+        fun provideFactory(noteId: Int?): ViewModelProvider.Factory {
+            return object : ViewModelProvider.NewInstanceFactory() {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return EditViewModel(noteId ?: NEW_NOTE_ID) as T
+                }
+            }
+        }
     }
 }
 

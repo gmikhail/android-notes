@@ -11,6 +11,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -20,6 +21,7 @@ import gmikhail.notes.databinding.FragmentEditBinding
 import gmikhail.notes.viewmodel.EditViewModel
 import gmikhail.notes.viewmodel.HistoryRecord
 import gmikhail.notes.viewmodel.MainViewModel
+import gmikhail.notes.viewmodel.NEW_NOTE_ID
 
 private const val KEY_NOTE_ID = "noteId"
 
@@ -27,14 +29,14 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
 
     private var binding: FragmentEditBinding? = null
     private val viewModelMain: MainViewModel by activityViewModels{ MainViewModel.Factory }
-    private val viewModelEdit: EditViewModel by viewModels()
+    private lateinit var viewModelEdit: EditViewModel
     private var shouldRemove = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            viewModelEdit.setNoteId(it.getInt(KEY_NOTE_ID))
-        }
+        viewModelEdit = ViewModelProvider(this,
+            EditViewModel.provideFactory(arguments?.getInt(KEY_NOTE_ID))
+        )[EditViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -112,7 +114,7 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
         }
         val noteId = viewModelEdit.noteId
         if(savedInstanceState == null) {
-            if (noteId == -1) {
+            if (noteId == NEW_NOTE_ID) {
                 binding?.editTextBody?.requestFocus()
                 showKeyboard(binding?.editTextBody)
                 viewModelEdit.addToHistory(HistoryRecord("", 0))
@@ -167,7 +169,7 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
         )
         if(newNote.isNotBlank())
             viewModelMain.addNote(newNote) {
-                viewModelEdit.setNoteId(it)
+                viewModelEdit.updateNewNoteId(it)
             }
     }
 
@@ -196,12 +198,13 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
         super.onPause()
         if(activity?.isChangingConfigurations == true) return
         val noteId = viewModelEdit.noteId
-        if(noteId == -1) {
+        if(noteId == NEW_NOTE_ID) {
             if (!shouldRemove)
                 addNewNote()
         }
         else {
-            if (shouldRemove) viewModelMain.deleteNote(noteId)
+            if (shouldRemove)
+                viewModelMain.deleteNote(noteId)
             else editNote()
         }
     }
