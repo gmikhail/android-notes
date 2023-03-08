@@ -34,7 +34,7 @@
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/switchAuth"
-            android:text="@string/auth_title"
+            android:text="@string/auth_label"
             android:showText="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textViewLicense"
-            android:text="@string/license_title"
+            android:text="@string/license_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"

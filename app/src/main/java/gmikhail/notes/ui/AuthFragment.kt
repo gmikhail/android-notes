@@ -35,7 +35,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if(isNeedToAuthenticate()) {
-            binding.imageButton.setOnClickListener {
+            binding.imageButtonAuth.setOnClickListener {
                 authenticate()
             }
             authenticate()

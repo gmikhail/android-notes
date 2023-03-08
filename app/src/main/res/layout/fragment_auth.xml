@@ -5,20 +5,20 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/imageView"
         android:layout_width="96dp"
         android:layout_height="96dp"
         android:src="@drawable/ic_badge"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
+        android:contentDescription="@string/accessibility_auth_logo"
+        app:layout_constraintBottom_toTopOf="@+id/textViewAuthTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/textView"
+        android:id="@+id/textViewAuthTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/auth_message"
+        android:text="@string/auth_title"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,15 +26,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/imageButtonAuth"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:src="@drawable/ic_fingerprint"
         android:scaleType="fitCenter"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/accessibility_auth_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewAuthTitle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
