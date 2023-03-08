@@ -7,7 +7,7 @@
     <string name="auth_prompt_title">Biometric authentication</string>
     <string name="auth_prompt_negative">Cancel</string>
     <string name="accessibility_auth_logo">Authentication logo</string>
-    <string name="accessibility_auth_button">Hello logo</string>
+    <string name="accessibility_auth_button">Authentication button</string>
     <!-- Main screen -->
     <string name="message_empty_list">You don\'t have any notes yet</string>
     <string name="fab_create">Create</string>
