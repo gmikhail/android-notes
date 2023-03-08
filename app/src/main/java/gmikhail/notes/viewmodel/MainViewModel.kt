@@ -11,8 +11,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-private const val PREF_KEY_DARK_MODE = "pref_dark_mode"
-private const val PREF_KEY_DISPLAY_MODE_LIST = "pref_display_mode_list"
+private const val DARK_MODE_KEY = "dark_mode"
+private const val DARK_MODE_DEFAULT_VALUE = false
+private const val DISPLAY_MODE_LIST_KEY = "display_mode_list"
+private const val DISPLAY_MODE_DEFAULT_VALUE = true
 
 class MainViewModel(
     private val noteRepository: NoteRepository,
@@ -99,12 +101,12 @@ class MainViewModel(
     }
 
     private fun loadDarkMode() {
-        _darkMode.value  = preferencesRepository.loadBool(PREF_KEY_DARK_MODE, false)
+        _darkMode.value  = preferencesRepository.loadBool(DARK_MODE_KEY, DARK_MODE_DEFAULT_VALUE)
     }
 
     private fun loadDisplayMode(){
         _displayModeList.value = preferencesRepository.loadBool(
-            PREF_KEY_DISPLAY_MODE_LIST, true
+            DISPLAY_MODE_LIST_KEY, DISPLAY_MODE_DEFAULT_VALUE
         )
     }
 
@@ -112,7 +114,7 @@ class MainViewModel(
         _darkMode.value?.let {
             val newValue = !it
             _darkMode.value = newValue
-            preferencesRepository.saveBool(PREF_KEY_DARK_MODE, newValue)
+            preferencesRepository.saveBool(DARK_MODE_KEY, newValue)
         }
     }
 
@@ -120,7 +122,7 @@ class MainViewModel(
         _displayModeList.value?.let {
             val newValue = !it
             _displayModeList.value = newValue
-            preferencesRepository.saveBool(PREF_KEY_DISPLAY_MODE_LIST, newValue)
+            preferencesRepository.saveBool(DISPLAY_MODE_LIST_KEY, newValue)
         }
     }
 
