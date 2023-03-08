@@ -9,7 +9,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Notes"
+        android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
             android:name=".ui.MainActivity"
@@ -20,6 +20,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/AppTheme.ActionBar" />
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:theme="@style/AppTheme.ActionBar" />
     </application>
 
 </manifest>

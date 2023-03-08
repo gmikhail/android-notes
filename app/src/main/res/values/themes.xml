@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Notes" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -14,5 +14,13 @@
         <!-- Customize your theme here. -->
         <item name="android:windowLightStatusBar">true</item>
         <item name="windowActionModeOverlay">true</item>
+    </style>
+    <style name="AppTheme.ActionBar" parent="AppTheme">
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
+        <item name="toolbarStyle">@style/CustomToolbar</item>
+    </style>
+    <style name="CustomToolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">?attr/colorSurface</item>
     </style>
 </resources>
