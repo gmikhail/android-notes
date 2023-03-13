@@ -10,10 +10,18 @@
         tools:layout="@layout/fragment_main" >
         <action
             android:id="@+id/action_mainFragment_to_editFragment"
-            app:destination="@id/editFragment" />
+            app:destination="@id/editFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_mainFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/editFragment"
@@ -32,7 +40,11 @@
             android:id="@+id/action_authFragment_to_mainFragment"
             app:destination="@id/mainFragment"
             app:popUpTo="@id/authFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
